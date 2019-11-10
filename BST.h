@@ -3,6 +3,7 @@
 
 #include<utility>
 #include<stdexcept>
+#include<iostream>
 
 template<typename K, typename V>
 struct Node{
@@ -28,16 +29,8 @@ struct Node{
         return std::make_pair(key,value);
     }
 
-    K returnKey() {
-        return key;
-    }
-
-    V returnValue() {
-        return value;
-    }
-
     bool isLeaf() {
-        if(this->left == nullptr && this->right == nullptr)
+        if(this == nullptr || this->left == nullptr && this->right == nullptr)
             return true;
         return false;
     }
@@ -53,15 +46,25 @@ class BinarySearchTree {
         void deleteHelper(Node<K,V>* toDelete) { //Deletes if the node has at least one leaf child
             if(toDelete->left->isLeaf()) { //Replace toDelete with its right child
                 delete toDelete->left;
-                Node<K,V>* parent = toDelete->parent;
-                if(toDelete == parent->left)
-                    parent->left = toDelete->right;
-                else
-                    parent->right = toDelete->right;
-                delete toDelete;
+                if (toDelete == root) {
+                    root = toDelete->right;
+                    delete toDelete;
+                }
+                else {
+                    Node<K,V>* parent = toDelete->parent;
+                    if(toDelete == parent->left)
+                        parent->left = toDelete->right;
+                    else
+                        parent->right = toDelete->right;
+                    delete toDelete;
+                }
             } //Successfully removed toDelete and replaced it with the right child
             else if(toDelete->right->isLeaf()) { //If the right child is a leaf, replace with its left
                 delete toDelete->right;
+                if (toDelete == root){
+                    root = toDelete->right;
+                    delete toDelete;
+                }
                 Node<K,V>* parent = toDelete->parent;
                 if(toDelete == parent->left)
                     parent->left = toDelete->left;
@@ -70,34 +73,48 @@ class BinarySearchTree {
                 delete toDelete;
             }
         }
-    
+
+        Node<K,V>* searchTree(K key, Node<K,V>* curr) {
+            if(curr->isLeaf())
+                return curr;
+            else if(curr->key > key)
+                return searchTree(key, curr->left);
+            else if(curr->key < key)
+                return searchTree(key, curr->right);
+            else
+                return curr;
+        }
+
     public:
         BinarySearchTree(): root(nullptr), number_of_nodes(0) {}
 
-        int size() {return number_of_nodes;}
-        int empty() {return number_of_nodes==0;}
-        Node<K,V>* search(K key) {
-            if(empty())
-                throw std::runtime_error("Tree is empty");
-            Node<K,V>* curr = root;
-            while(curr->key != key && !curr->isLeaf()) {
-                if (curr->key > key)
-                    curr = curr->left;
-                else
-                    curr = curr->right;
+        size_t size() {return number_of_nodes;}
+        bool empty() {return number_of_nodes==0;}
+        
+        Node<K,V>* find(K k) {
+            if (empty()) {
+                throw std::runtime_error("Tree is currently empty");
             }
-            return curr;
+            else {
+                Node<K,V>* found = searchTree(k,root);
+                if (found->isLeaf())
+                    throw std::runtime_error("Key is not in tree");
+                else
+                    return found;
+            }
         }
 
         void insert(K key, V value) {
             Node<K,V>* toInsert = new Node<K,V>(key, value);
             if(empty()) {
+                delete root; //If there is anything currently in root/like a dummy node, deletes it
                 root = toInsert;
             }
             else {
-                Node<K,V>* spot = search(key);
+                Node<K,V>* spot = searchTree(key, root);
                 if (spot->isLeaf()) {
                     Node<K,V>* parent = spot->parent;
+                    toInsert->parent = parent;
                     if(parent->left == spot)
                         parent->left = toInsert;
                     else
@@ -112,7 +129,7 @@ class BinarySearchTree {
         }
 
         void remove(K key) {
-            Node<K,V>* toDelete = search(key);
+            Node<K,V>* toDelete = searchTree(key, root);
             if(toDelete->isLeaf())
                 throw std::runtime_error("Key does not exist in tree."); //element did not exist
             else if(toDelete->left->isLeaf() || toDelete->right->isLeaf()) { //Replace toDelete with its right child
@@ -121,7 +138,7 @@ class BinarySearchTree {
             else {
                 //Find Successor
                 Node<K,V>* successor = toDelete->left;
-                while(!(successor->right->isLeaf())) {
+                while(!(successor->right->isLeaf())) { //CAUSING A SEG FAULT!!!!
                     successor = successor->right;
                 }
                 //Swap the values of successor to node to delete

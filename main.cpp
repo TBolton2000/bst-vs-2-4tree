@@ -11,7 +11,7 @@ int main() {
     cout << bst.size() << endl;
 
     try {
-        //bst.search(10);
+        //bst.find(10);
         bst.remove(10);
 
     }
@@ -23,14 +23,20 @@ int main() {
     bst.insert(20, 'c');
     bst.insert(5, 'd');
     bst.insert(400, 'e');
-    cout << bst.search(10)->returnKey() << ", " << bst.search(10)->returnValue() << endl;
-    cout << bst.search(15)->returnKey() << ", " << bst.search(15)->returnValue() << endl;
-    cout << bst.search(400)->returnKey() << ", " << bst.search(400)->returnValue() << endl;
+    cout << bst.find(10)->key << ", " << bst.find(10)->value << endl;
+    cout << bst.find(15)->key << ", " << bst.find(15)->value << endl;
+    cout << bst.find(400)->key << ", " << bst.find(400)->value << endl;
     cout << bst.size() << endl;
     bst.remove(10);
-    cout << bst.search(20)->returnKey() << ", " << bst.search(20)->returnValue() << endl;
-    cout << bst.search(15)->returnKey() << ", " << bst.search(15)->returnValue() << endl;
-    cout << bst.search(400)->returnKey() << ", " << bst.search(400)->returnValue() << endl;
+    bst.remove(15);
+    bst.remove(5);
+    bst.remove(400);
+    bst.remove(20);
+    //cout << bst.find(20)->key << ", " << bst.find(20)->value << endl;
+    //cout << bst.find(5)->key << ", " << bst.find(15)->value << endl;
+    //cout << bst.find(400)->key << ", " << bst.find(400)->value << endl;
     cout << bst.size() << endl;
+    bst.insert(10,'c');
+    cout << bst.find(10)->key << ", " << bst.find(10)->value << endl;
     return 0;
 }
