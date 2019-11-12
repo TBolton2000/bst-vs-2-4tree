@@ -1,10 +1,11 @@
 #include"BST.h"
+#include"TwoFourTree.h"
 #include<iostream>
 
 using namespace std;
 
 int main() {
-
+    /*
     BinarySearchTree<int,char> bst;
     //cout << bst.empty() << endl;
 
@@ -38,5 +39,7 @@ int main() {
     cout << bst.size() << endl;
     bst.insert(10,'c');
     cout << bst.find(10)->key << ", " << bst.find(10)->value << endl;
+    */
+    TwoFourTree<char,int> tree;
     return 0;
 }
