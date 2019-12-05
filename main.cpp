@@ -1,5 +1,5 @@
 #include"BST.h"
-#include"TwoFourTree.h"
+#include"testing.h"
 #include<iostream>
 
 using namespace std;
@@ -40,6 +40,16 @@ int main() {
     bst.insert(10,'c');
     cout << bst.find(10)->key << ", " << bst.find(10)->value << endl;
     */
-    TwoFourTree<char,int> tree;
+    ReturnTiming data;
+    data.test_increasing(12000);
+    cout << "Increasing:" << endl;
+    data.printData();
+    cout << endl << "Decreasing:" << endl;
+    data.test_decreasing(12000);
+    data.printData();
+    cout << endl << "Random:" << endl;
+    data.test_random(12000);
+    data.printData();
+    
     return 0;
 }

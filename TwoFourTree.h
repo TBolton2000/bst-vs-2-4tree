@@ -1,41 +1,15 @@
 #ifndef TWOFOURTREE_H
 #define TWOFOURTREE_H
-#include<vector>
+#include"NodeTwo.h"
+#include<iostream>
 
-
-template<typename K, typename V>
-struct NodeTwo {
-    NodeTwo* parent;
-    std::vector<NodeTwo*> children;
-    std::vector<std::pair<K,V>> pair;
-    NodeTwo(): parent(nullptr), children() {
-        
-    }
-
-    NodeTwo(K key, V value): parent(nullptr), children(), pair(){
-        pair.push_back(std::make_pair(key,value));
-    }
-};
 
 template<typename K, typename V>
 class TwoFourTree {
     private:
         NodeTwo<K,V>* root;
-        size_t total;
-
-        void split(NodeTwo<K,V>* curr) {
-            if(curr == root) {
-                if(curr->pair.size() == 3) {
-                    root = new NodeTwo(curr->pair.at(1).first,curr->pair.at(1).second)
-                    root->children.push_back(curr);
-                    NodeTwo<K,V>* newRightNode = 
-                }
-                else if(curr->pair.size() == 4) {
-
-                }
-            }
-        }
-
+        int total;
+        
     public:
         TwoFourTree(): root(nullptr), total(0) {}
 
@@ -44,20 +18,40 @@ class TwoFourTree {
         bool empty() {return total == 0;}
 
         NodeTwo<K,V>* searchTree(K key, NodeTwo<K,V>* curr) {
-            for(int i = 0; i < curr->pair.size(); i++) {
-                if (key < curr->pair.at(i).first)
-                    return searchTree(key, curr->children.at(i));
-                if (key == curr->pair.at(i).first)
-                    return curr;
+            if(curr->size() == 3) {
+                curr->split();
+                if(curr == root)
+                    root = curr->getParent();
+                curr = curr->getParent();
             }
-            return searchTree(key, curr->children.at(curr->pair.size()));
+            if(!(curr->isLeaf()) && curr->findIndex(key) == -1) { // NOT HERE KEEP LOOKING
+                return searchTree(key,curr->getNext(key));
+            }
+            return curr;
+        }
+
+        std::pair<K,V> find(K key){
+            NodeTwo<K,V>* found = searchTree(key, root);
+            int index = found->findIndex(key);
+            if(index == -1)
+                throw std::runtime_error("Key not found");
+            else
+                return found->getPair(key);
         }
 
         void insert(K key, V value) {
             if(empty()) {
                 root = new NodeTwo<K,V>(key, value);
+                total++;
+            }
+            else {
+                NodeTwo<K,V>* insertHere = searchTree(key, root);
+                insertHere->addPair(key,value);
+                total++;
             }
         }
+
+        
 };
 
 #endif /*TWOFOURTREE_H*/
